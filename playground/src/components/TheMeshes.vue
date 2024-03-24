@@ -35,7 +35,7 @@ const { dummyComputed, num } = toRefs(props);
         text="my 3d text"
         :size="0.8"
         :position="[num, num, num]"
-        :translate-x="dummyComputed"
+        :translate-x="5"
       >
         <!-- This will not revert the translateX if it's wrapped in brackets: -->
         <!-- <Text3D

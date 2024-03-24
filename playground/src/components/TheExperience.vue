@@ -36,7 +36,7 @@ const units = ref([1, 2, 3]);
 onMounted(() => {
   setTimeout(() => {
     timeoutValue.value = 3;
-  }, 5000);
+  }, 1500);
 });
 </script>
 
