@@ -112,6 +112,26 @@ export function deepEqual(a: any, b: any): boolean {
   return true
 }
 
+export function isEqual(a: any, b: any) {
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object' || a == null || b == null) return false;
+
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+
+  for (let key of keysA) {
+    if (!keysB.includes(key)) return false;
+    if (typeof a[key] === 'function' || typeof b[key] === 'function') {
+      if (a[key] !== b[key]) return false;
+    } else {
+      if (!isEqual(a[key], b[key])) return false;
+    }
+  }
+
+  return true;
+}
+
 export function deepArrayEqual(arr1: any[], arr2: any[]): boolean {
   // If they're not both arrays, return false
   if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false

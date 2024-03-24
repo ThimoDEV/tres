@@ -36,6 +36,7 @@ declare module 'vue' {
     TheFirstScene: typeof import('./src/components/TheFirstScene.vue')['default']
     TheGizmos: typeof import('./src/components/TheGizmos.vue')['default']
     TheGroups: typeof import('./src/components/TheGroups.vue')['default']
+    TheMeshes: typeof import('./src/components/TheMeshes.vue')['default']
     TheModel: typeof import('./src/components/gltf/TheModel.vue')['default']
     TheParticles: typeof import('./src/components/TheParticles.vue')['default']
     ThePortal: typeof import('./src/components/portal-journey/ThePortal.vue')['default']

@@ -1,86 +1,85 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
-import { BasicShadowMap, SRGBColorSpace, NoToneMapping } from 'three'
-import { TresCanvas } from '@tresjs/core'
-import { OrbitControls } from '@tresjs/cientos'
-import { TresLeches, useControls } from '@tresjs/leches'
-import '@tresjs/leches/styles'
-import TheSphere from './TheSphere.vue'
+import { TresCanvas } from "@tresjs/core";
+import {
+  reactive,
+  onMounted,
+  ref,
+  computed,
+} from "vue";
+import {
+  BasicShadowMap,
+  SRGBColorSpace,
+  NoToneMapping,
+} from "three";
+import { OrbitControls } from "@tresjs/cientos";
+import TheMeshes from "./TheMeshes.vue";
 
-const gl = {
-  clearColor: '#82DBC5',
+const gl = reactive({
+  clearColor: "#82DBC5",
   shadows: true,
   alpha: false,
   shadowMapType: BasicShadowMap,
   outputColorSpace: SRGBColorSpace,
   toneMapping: NoToneMapping,
-}
+});
 
-const wireframe = ref(true)
+const canvas = ref(null);
 
-const canvas = ref()
-const meshRef = ref()
+const dummyComputed = computed(() => {
+  if (!timeoutValue.value) return 2;
+  return timeoutValue.value;
+});
 
-const { isVisible } = useControls({
-  isVisible: true,
-})
+const timeoutValue = ref(null);
+const units = ref([1, 2, 3]);
 
-watchEffect(() => {
-  if (meshRef.value) {
-    console.log(meshRef.value)
-  }
-})
+onMounted(() => {
+  setTimeout(() => {
+    timeoutValue.value = 3;
+  }, 5000);
+});
 </script>
 
 <template>
-  <TresLeches />
-  <TresCanvas
-    v-bind="gl"
-    ref="canvas"
-    class="awiwi"
-    :style="{ background: '#008080' }"
-  >
+  <TresCanvas v-bind="gl" ref="canvas">
+    <!--  Using computed values for camera position breaks everything: -->
+    <!-- <TresPerspectiveCamera
+      :position="[dummyComputed, dummyComputed, dummyComputed]"
+    /> -->
     <TresPerspectiveCamera
-      :position="[7, 7, 7]"
-      :look-at="[0, 4, 0]"
+      :position="[15, 15, 15]"
     />
-    <OrbitControls />
-    <TresMesh
-      :position="[-2, 6, 0]"
-      :rotation="[0, Math.PI, 0]"
-      name="cone"
-      cast-shadow
-    >
-      <TresConeGeometry :args="[1, 1.5, 3]" />
-      <TresMeshToonMaterial color="#82DBC5" />
-    </TresMesh>
-    <TresMesh
-      :position="[0, 4, 0]"
-      cast-shadow
-    >
-      <TresBoxGeometry :args="[1.5, 1.5, 1.5]" />
-      <TresMeshToonMaterial
-        color="#4F4F4F"
-        :wireframe="wireframe"
-      />
-    </TresMesh>
-    <TresMesh
-      ref="meshRef"
-      :rotation="[-Math.PI / 2, 0, Math.PI / 2]"
-      name="floor"
-      receive-shadow
-    >
-      <TresPlaneGeometry :args="[20, 20, 20]" />
-      <TresMeshToonMaterial
-        color="#D3FC8A"
-      />
-    </TresMesh>
-    <TheSphere v-if="isVisible" />
-    <TresAxesHelper :args="[1]" />
+    <OrbitControls
+      :target="[
+        dummyComputed,
+        dummyComputed,
+        dummyComputed,
+      ]"
+    />
+    <TresAmbientLight
+      :intensity="0.5"
+      color="red"
+    />
+    <!-- When :dummyComputed is passed as props to the custom TheMeshes component, it 
+          seems to trigger a rerender on the whole thing and reverts the translateX of the 
+          Text3D mesh.
+
+          What's weird is that if you wrap the translateX value in array brackets, the problem
+          goes away. See inside TheMeshes for an example.
+    -->
+    <TheMeshes
+      v-for="num in units"
+      :dummy-computed="dummyComputed"
+      :num="num"
+    />
     <TresDirectionalLight
       :position="[0, 2, 4]"
-      :intensity="2"
+      :intensity="1"
       cast-shadow
+    />
+    <TresAxesHelper />
+    <TresGridHelper
+      :args="[10, 10, 0x444444, 'teal']"
     />
   </TresCanvas>
 </template>

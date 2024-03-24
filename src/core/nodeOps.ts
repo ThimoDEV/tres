@@ -3,7 +3,7 @@ import { BufferAttribute } from 'three'
 import { isFunction } from '@alvarosabu/utils'
 import type { Object3D, Camera } from 'three'
 import { useLogger } from '../composables'
-import { deepArrayEqual, isHTMLTag, kebabToCamel } from '../utils'
+import { deepArrayEqual, isEqual, isHTMLTag, kebabToCamel } from '../utils'
 
 import type { TresObject, TresObject3D, TresScene } from '../types'
 import { catalogue } from './catalogue'
@@ -198,12 +198,16 @@ export const nodeOps: RendererOptions<TresObject, TresObject> = {
       let finalKey = kebabToCamel(key)
       let target = root?.[finalKey]
 
+      if (isEqual(_prevValue, nextValue)) {
+        return;
+      }
+
       if (key === 'args') {
         const prevNode = node as TresObject3D
         const prevArgs = _prevValue ?? []
         const args = nextValue ?? []
         const instanceName = node.userData.tres__name || node.type
-
+        
         if (instanceName && prevArgs.length && !deepArrayEqual(prevArgs, args)) {
           root = Object.assign(prevNode, new catalogue.value[instanceName](...nextValue))
         }
