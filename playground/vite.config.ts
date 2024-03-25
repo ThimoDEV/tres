@@ -41,4 +41,11 @@ export default defineConfig({
     },
     dedupe: ['three'],
   },
+  server: {
+    hmr: {
+      overlay: true,
+    },
+    port: 3000,
+    open: true,
+  },
 })
