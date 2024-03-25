@@ -1,6 +1,16 @@
 import { computed, readonly } from 'vue'
-import type { MaybeRefOrGetter, MaybeRef, ComputedRef, Ref } from 'vue'
-import { refDebounced, toValue, useElementSize, useWindowSize } from '@vueuse/core'
+import type {
+  MaybeRefOrGetter,
+  MaybeRef,
+  ComputedRef,
+  Ref,
+} from 'vue'
+import {
+  refDebounced,
+  toValue,
+  useElementSize,
+  useWindowSize,
+} from '@vueuse/core'
 
 export interface SizesType {
   height: Readonly<Ref<number>>
@@ -15,13 +25,32 @@ export default function useSizes(
 ) {
   const reactiveSize = toValue(windowSize)
     ? useWindowSize()
-    : useElementSize(computed(() => toValue(canvas).parentElement))
+    : useElementSize(
+      computed(
+        () => toValue(canvas).parentElement,
+      ),
+      {
+        width:
+            toValue(canvas).parentElement
+              ?.clientWidth ?? 0,
+        height:
+            toValue(canvas).parentElement
+              ?.clientHeight ?? 0,
+      },
+    )
 
-  const debouncedReactiveWidth = readonly(refDebounced(reactiveSize.width, debounceMs))
-  const debouncedReactiveHeight = readonly(refDebounced(reactiveSize.height, debounceMs))
+  const debouncedReactiveWidth = readonly(
+    refDebounced(reactiveSize.width, debounceMs),
+  )
+  const debouncedReactiveHeight = readonly(
+    refDebounced(reactiveSize.height, debounceMs),
+  )
 
-  const aspectRatio = computed(() => debouncedReactiveWidth.value / debouncedReactiveHeight.value)
-
+  const aspectRatio = computed(
+    () =>
+      debouncedReactiveWidth.value
+      / debouncedReactiveHeight.value,
+  )
   return {
     height: debouncedReactiveHeight,
     width: debouncedReactiveWidth,
